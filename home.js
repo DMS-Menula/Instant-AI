@@ -13,10 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // State variables
   let isDarkMode = true;
   let recognition;
-<<<<<<< HEAD
-=======
+
   const API_KEY = "AIzaSyDYV2slkUuzJ3ddfmKFXZYm6l9VWlV3OOI"; 
->>>>>>> d67090ff74493bb3a9950f3f6dbc2751f4742641
 
   // Initialize the app
   init();
@@ -315,8 +313,6 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
   });
 });
-<<<<<<< HEAD
-=======
 
 // Global function for copying code
 function copyCode(button) {
@@ -329,4 +325,3 @@ function copyCode(button) {
     }, 2000);
   });
 }
->>>>>>> d67090ff74493bb3a9950f3f6dbc2751f4742641

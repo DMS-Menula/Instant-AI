@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let isDarkMode = true;
   let recognition;
-  const API_KEY = ${{ secrets.API_KEY }} // Consider moving this to a config file
+  const API_KEY = ${{secrets.API_KEY}} 
 
   init();
 

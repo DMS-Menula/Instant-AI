@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let isDarkMode = true;
   let recognition;
-  const API_KEY = 'AIzaSyDYV2slkUuzJ3ddfmKFXZYm6l9VWlV3OOI'; 
+  const API_KEY = "AIzaSyDYV2slkUuzJ3ddfmKFXZYm6l9VWlV3OOI"; 
 
   init();
 

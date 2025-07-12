@@ -13,6 +13,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // State variables
   let isDarkMode = true;
   let recognition;
+<<<<<<< HEAD
+=======
+  const API_KEY = "AIzaSyDYV2slkUuzJ3ddfmKFXZYm6l9VWlV3OOI"; 
+>>>>>>> d67090ff74493bb3a9950f3f6dbc2751f4742641
 
   // Initialize the app
   init();
@@ -311,3 +315,18 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
   });
 });
+<<<<<<< HEAD
+=======
+
+// Global function for copying code
+function copyCode(button) {
+  const code = button.getAttribute('data-code');
+  navigator.clipboard.writeText(code).then(() => {
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-check"></i> Copied!';
+    setTimeout(() => {
+      button.innerHTML = originalText;
+    }, 2000);
+  });
+}
+>>>>>>> d67090ff74493bb3a9950f3f6dbc2751f4742641

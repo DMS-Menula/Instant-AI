@@ -1,34 +1,38 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // DOM Elements
   const sendButton = document.getElementById("send-button");
   const messageInput = document.getElementById("usertext");
   const messageCanvas = document.getElementById("message-canvas");
   const clearChatButton = document.getElementById("clear-chat");
   const themeToggle = document.getElementById("theme-toggle");
-  const boldButton = document.getElementById("markdown-bold");
-  const codeButton = document.getElementById("markdown-code");
+  const voiceInputButton = document.getElementById("voice-input");
+  const attachFileButton = document.getElementById("attach-file");
   const typingIndicator = document.getElementById("typing-indicator");
   const charCounter = document.getElementById("char-counter");
 
+  // State variables
   let isDarkMode = true;
   let recognition;
-  const API_KEY = "AIzaSyDYV2slkUuzJ3ddfmKFXZYm6l9VWlV3OOI"; // Consider moving this to a config file
 
+  // Initialize the app
   init();
 
   function init() {
+    // Load saved theme preference
     const savedTheme = localStorage.getItem("instantAI-theme");
     if (savedTheme === "light") {
       toggleTheme();
     }
 
+    // Load chat history if available
     loadChatHistory();
 
+    // Set up event listeners
     setupEventListeners();
-
-    hljs.highlightAll();
   }
 
   function setupEventListeners() {
+    // Send message on button click or Enter key
     sendButton.addEventListener("click", sendMessage);
     messageInput.addEventListener("keypress", (e) => {
       if (e.key === "Enter") {
@@ -36,60 +40,43 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
+    // Clear chat history
     clearChatButton.addEventListener("click", clearChat);
 
+    // Toggle theme
     themeToggle.addEventListener("click", toggleTheme);
 
-    boldButton.addEventListener("click", () => {
-      wrapSelection("**", "**");
-      messageInput.focus();
-    });
+    // Voice input
+    voiceInputButton.addEventListener("click", toggleVoiceInput);
 
-    codeButton.addEventListener("click", () => {
-      wrapSelection("```\n", "\n```");
-      messageInput.focus();
-    });
-
+    // Character counter
     messageInput.addEventListener("input", updateCharCounter);
 
-    updateCharCounter();
-  }
-
-  function wrapSelection(prefix, suffix) {
-    const start = messageInput.selectionStart;
-    const end = messageInput.selectionEnd;
-    const selectedText = messageInput.value.substring(start, end);
-    const beforeText = messageInput.value.substring(0, start);
-    const afterText = messageInput.value.substring(end);
-
-    messageInput.value = beforeText + prefix + selectedText + suffix + afterText;
-    
-    if (selectedText.length > 0) {
-      messageInput.selectionStart = start + prefix.length;
-      messageInput.selectionEnd = end + prefix.length;
-    } else {
-      messageInput.selectionStart = messageInput.selectionEnd = start + prefix.length;
-    }
-    
+    // Initialize character counter
     updateCharCounter();
   }
 
   function sendMessage() {
     const message = messageInput.value.trim();
     if (message) {
+      // Display user message
       displayMessage(message, "user");
 
+      // Clear input
       messageInput.value = "";
       updateCharCounter();
 
+      // Show typing indicator
       showTypingIndicator();
 
+      // Get bot response after a short delay
       setTimeout(() => {
         getBotResponse(message);
       }, 500);
     }
   }
 
+  // Update the displayMessage function to be more responsive
   function displayMessage(message, sender) {
     const messageDiv = document.createElement("div");
     messageDiv.className = `message-${sender} mb-3`;
@@ -99,30 +86,16 @@ document.addEventListener("DOMContentLoaded", () => {
       minute: "2-digit",
     });
 
-    let processedMessage = message;
-    
-    processedMessage = processedMessage.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    
-    processedMessage = processedMessage.replace(/```([\s\S]*?)```/g, function(match, code) {
-      const randomId = 'code-' + Math.random().toString(36).substr(2, 9);
-      return `<div class="code-block relative">
-          <button class="code-copy-btn" onclick="copyCode(this)" data-code="${escapeHtml(code)}">
-              <i class="far fa-copy"></i> Copy
-          </button>
-          <pre><code class="language-javascript">${escapeHtml(code)}</code></pre>
-      </div>`;
-    });
-
     if (sender === "user") {
       messageDiv.innerHTML = `
             <div class="flex items-start justify-end space-x-2">
                 <div class="flex-1 min-w-0">
                     <div class="bg-blue-600 rounded-lg p-2 max-w-full">
-                        <div class="prose prose-invert max-w-none">${processedMessage}</div>
+                        <p class="text-white text-sm sm:text-base break-words">${message}</p>
                     </div>
                     <div class="text-xs text-gray-400 mt-1 mr-1 text-right">${timestamp}</div>
                 </div>
-                <div class="flex-shrink-0 bg-gray-600 rounded-full w-6 h-6 flex items-center justify-center">
+                <div class="flex-shrink-0 bg-gray-600 rounded-full w-7 h-7 flex items-center justify-center">
                     <i class="fas fa-user text-white text-xs"></i>
                 </div>
             </div>
@@ -130,12 +103,12 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       messageDiv.innerHTML = `
             <div class="flex items-start space-x-2">
-                <div class="flex-shrink-0 bg-blue-600 rounded-full w-6 h-6 flex items-center justify-center">
+                <div class="flex-shrink-0 bg-blue-600 rounded-full w-7 h-7 flex items-center justify-center">
                     <i class="fas fa-robot text-white text-xs"></i>
                 </div>
                 <div class="flex-1 min-w-0">
                     <div class="bg-gray-700 rounded-lg p-2 max-w-full">
-                        <div class="prose prose-invert max-w-none">${processedMessage}</div>
+                        <p class="text-white text-sm sm:text-base break-words">${message}</p>
                     </div>
                     <div class="text-xs text-gray-400 mt-1 ml-1">${timestamp}</div>
                 </div>
@@ -145,27 +118,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     messageCanvas.appendChild(messageDiv);
     messageDiv.scrollIntoView({ behavior: "smooth", block: "end" });
-    
-    document.querySelectorAll('pre code').forEach((block) => {
-      hljs.highlightElement(block);
-    });
-    
     saveChatHistory();
   }
 
-  function escapeHtml(unsafe) {
-    return unsafe
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
-
   function getBotResponse(userMessage) {
+    // Set headers for the API request
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
+    // Prepare the request payload with the user input text
     const raw = JSON.stringify({
       contents: [
         {
@@ -176,17 +137,9 @@ document.addEventListener("DOMContentLoaded", () => {
           ],
         },
       ],
-      safetySettings: [
-        {
-          category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-          threshold: "BLOCK_NONE",
-        },
-      ],
-      generationConfig: {
-        maxOutputTokens: 1000,
-      },
     });
 
+    // Set request options
     const requestOptions = {
       method: "POST",
       headers: myHeaders,
@@ -194,24 +147,17 @@ document.addEventListener("DOMContentLoaded", () => {
       redirect: "follow",
     };
 
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
-
-    console.log("Sending request to:", apiUrl);
-    console.log("Request payload:", raw);
+    const apiUrl =
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyDYV2slkUuzJ3ddfmKFXZYm6l9VWlV3OOI";
 
     fetch(apiUrl, requestOptions)
       .then((response) => {
-        console.log("Raw response:", response);
         if (!response.ok) {
-          return response.text().then((text) => {
-            console.log("Error response:", text);
-            throw new Error(`API Error: ${response.status} - ${text}`);
-          });
+          throw new Error("Failed to fetch API");
         }
         return response.json();
       })
       .then((result) => {
-        console.log("API Response:", result);
         hideTypingIndicator();
 
         if (result && result.candidates && result.candidates.length > 0) {
@@ -225,20 +171,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       })
       .catch((error) => {
-        console.error("Full Error:", error);
         hideTypingIndicator();
+        console.error("Error:", error);
         displayMessage(
-          `Error: ${error.message}. Please check the console for details.`,
+          "I'm having trouble connecting right now. Please try again later.",
           "bot"
         );
-        
-        // Fallback response
-        setTimeout(() => {
-          displayMessage(
-            "Here's a fallback response while we fix the API connection...",
-            "bot"
-          );
-        }, 1000);
       });
   }
 
@@ -251,15 +189,16 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function clearChat() {
+    // Show confirmation dialog
     if (confirm("Are you sure you want to clear the chat history?")) {
       messageCanvas.innerHTML = `
-                <div class="message-bot animate__animated animate__fadeInUp animate__faster mb-3">
-                    <div class="flex items-start space-x-2">
-                        <div class="flex-shrink-0 bg-blue-600 rounded-full w-6 h-6 flex items-center justify-center">
-                            <i class="fas fa-robot text-white text-xs"></i>
+                <div class="message-bot animate__animated animate__fadeInUp animate__faster mb-4">
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0 bg-blue-600 rounded-full w-8 h-8 flex items-center justify-center">
+                            <i class="fas fa-robot text-white text-sm"></i>
                         </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="bg-gray-700 rounded-lg p-2 max-w-full">
+                        <div>
+                            <div class="bg-gray-700 rounded-lg p-3 max-w-3xl">
                                 <p class="text-white">Chat history cleared. How can I assist you now?</p>
                             </div>
                             <div class="text-xs text-gray-400 mt-1 ml-1">Just now</div>
@@ -268,6 +207,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
             `;
 
+      // Clear local storage
       localStorage.removeItem("instantAI-chatHistory");
     }
   }
@@ -278,13 +218,63 @@ document.addEventListener("DOMContentLoaded", () => {
     if (isDarkMode) {
       document.body.classList.remove("bg-gray-100", "text-gray-900");
       document.body.classList.add("bg-gray-900", "text-gray-100");
-      themeToggle.innerHTML = '<i class="fas fa-moon text-base"></i>';
+      themeToggle.innerHTML = '<i class="fas fa-moon text-xl"></i>';
       localStorage.setItem("instantAI-theme", "dark");
     } else {
       document.body.classList.remove("bg-gray-900", "text-gray-100");
       document.body.classList.add("bg-gray-100", "text-gray-900");
-      themeToggle.innerHTML = '<i class="fas fa-sun text-base"></i>';
+      themeToggle.innerHTML = '<i class="fas fa-sun text-xl"></i>';
       localStorage.setItem("instantAI-theme", "light");
+    }
+  }
+
+  function toggleVoiceInput() {
+    if (!("webkitSpeechRecognition" in window)) {
+      displayMessage(
+        "Your browser doesn't support speech recognition. Try Chrome or Edge.",
+        "bot"
+      );
+      return;
+    }
+
+    if (voiceInputButton.classList.contains("recording")) {
+      // Stop recording
+      recognition.stop();
+      voiceInputButton.classList.remove("recording", "text-red-500");
+      voiceInputButton.classList.add("text-gray-400");
+      voiceInputButton.innerHTML = '<i class="fas fa-microphone"></i>';
+    } else {
+      // Start recording
+      recognition = new webkitSpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      recognition.onstart = () => {
+        voiceInputButton.classList.remove("text-gray-400");
+        voiceInputButton.classList.add("recording", "text-red-500");
+        voiceInputButton.innerHTML = '<i class="fas fa-microphone-slash"></i>';
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        messageInput.value = transcript;
+        updateCharCounter();
+      };
+
+      recognition.onerror = (event) => {
+        console.error("Speech recognition error", event.error);
+        voiceInputButton.classList.remove("recording", "text-red-500");
+        voiceInputButton.classList.add("text-gray-400");
+        voiceInputButton.innerHTML = '<i class="fas fa-microphone"></i>';
+      };
+
+      recognition.onend = () => {
+        voiceInputButton.classList.remove("recording", "text-red-500");
+        voiceInputButton.classList.add("text-gray-400");
+        voiceInputButton.innerHTML = '<i class="fas fa-microphone"></i>';
+      };
+
+      recognition.start();
     }
   }
 
@@ -311,12 +301,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const savedChat = localStorage.getItem("instantAI-chatHistory");
     if (savedChat) {
       messageCanvas.innerHTML = savedChat;
+      // Scroll to bottom
       messageCanvas.scrollTop = messageCanvas.scrollHeight;
-      
-      // Re-highlight any code blocks
-      document.querySelectorAll('pre code').forEach((block) => {
-        hljs.highlightElement(block);
-      });
     }
   }
 
@@ -325,15 +311,3 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
   });
 });
-
-// Global function for copying code
-function copyCode(button) {
-  const code = button.getAttribute('data-code');
-  navigator.clipboard.writeText(code).then(() => {
-    const originalText = button.innerHTML;
-    button.innerHTML = '<i class="fas fa-check"></i> Copied!';
-    setTimeout(() => {
-      button.innerHTML = originalText;
-    }, 2000);
-  });
-}

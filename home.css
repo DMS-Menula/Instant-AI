@@ -185,14 +185,12 @@ body {
     }
 }
 
-/* Prevent zooming on input focus */
 @media (max-width: 480px) {
     input, select, textarea {
         font-size: 16px !important;
     }
 }
 
-/* Dynamic viewport units for mobile browsers */
 @supports (height: 100dvh) {
     body {
         min-height: 100dvh;

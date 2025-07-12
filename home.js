@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // DOM Elements
   const sendButton = document.getElementById("send-button");
   const messageInput = document.getElementById("usertext");
   const messageCanvas = document.getElementById("message-canvas");
@@ -10,31 +9,25 @@ document.addEventListener("DOMContentLoaded", () => {
   const typingIndicator = document.getElementById("typing-indicator");
   const charCounter = document.getElementById("char-counter");
 
-  // State variables
   let isDarkMode = true;
   let recognition;
 
   const API_KEY = "AIzaSyDYV2slkUuzJ3ddfmKFXZYm6l9VWlV3OOI"; 
 
-  // Initialize the app
   init();
 
   function init() {
-    // Load saved theme preference
     const savedTheme = localStorage.getItem("instantAI-theme");
     if (savedTheme === "light") {
       toggleTheme();
     }
 
-    // Load chat history if available
     loadChatHistory();
 
-    // Set up event listeners
     setupEventListeners();
   }
 
   function setupEventListeners() {
-    // Send message on button click or Enter key
     sendButton.addEventListener("click", sendMessage);
     messageInput.addEventListener("keypress", (e) => {
       if (e.key === "Enter") {
@@ -42,43 +35,33 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // Clear chat history
     clearChatButton.addEventListener("click", clearChat);
 
-    // Toggle theme
     themeToggle.addEventListener("click", toggleTheme);
 
-    // Voice input
     voiceInputButton.addEventListener("click", toggleVoiceInput);
 
-    // Character counter
     messageInput.addEventListener("input", updateCharCounter);
 
-    // Initialize character counter
     updateCharCounter();
   }
 
   function sendMessage() {
     const message = messageInput.value.trim();
     if (message) {
-      // Display user message
       displayMessage(message, "user");
 
-      // Clear input
       messageInput.value = "";
       updateCharCounter();
 
-      // Show typing indicator
       showTypingIndicator();
 
-      // Get bot response after a short delay
       setTimeout(() => {
         getBotResponse(message);
       }, 500);
     }
   }
 
-  // Update the displayMessage function to be more responsive
   function displayMessage(message, sender) {
     const messageDiv = document.createElement("div");
     messageDiv.className = `message-${sender} mb-3`;
@@ -124,11 +107,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function getBotResponse(userMessage) {
-    // Set headers for the API request
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
-    // Prepare the request payload with the user input text
     const raw = JSON.stringify({
       contents: [
         {
@@ -141,7 +122,6 @@ document.addEventListener("DOMContentLoaded", () => {
       ],
     });
 
-    // Set request options
     const requestOptions = {
       method: "POST",
       headers: myHeaders,
@@ -191,7 +171,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function clearChat() {
-    // Show confirmation dialog
     if (confirm("Are you sure you want to clear the chat history?")) {
       messageCanvas.innerHTML = `
                 <div class="message-bot animate__animated animate__fadeInUp animate__faster mb-4">
@@ -209,7 +188,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
             `;
 
-      // Clear local storage
       localStorage.removeItem("instantAI-chatHistory");
     }
   }
@@ -240,13 +218,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (voiceInputButton.classList.contains("recording")) {
-      // Stop recording
       recognition.stop();
       voiceInputButton.classList.remove("recording", "text-red-500");
       voiceInputButton.classList.add("text-gray-400");
       voiceInputButton.innerHTML = '<i class="fas fa-microphone"></i>';
     } else {
-      // Start recording
       recognition = new webkitSpeechRecognition();
       recognition.continuous = false;
       recognition.interimResults = false;
@@ -303,18 +279,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const savedChat = localStorage.getItem("instantAI-chatHistory");
     if (savedChat) {
       messageCanvas.innerHTML = savedChat;
-      // Scroll to bottom
       messageCanvas.scrollTop = messageCanvas.scrollHeight;
     }
   }
 
-  // Prevent right-click
   document.addEventListener("contextmenu", (e) => {
     e.preventDefault();
   });
 });
 
-// Global function for copying code
 function copyCode(button) {
   const code = button.getAttribute('data-code');
   navigator.clipboard.writeText(code).then(() => {

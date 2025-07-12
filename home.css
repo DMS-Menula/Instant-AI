@@ -1,0 +1,148 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.message-user {
+    animation: slideInRight 0.3s ease-out forwards;
+}
+
+.message-bot {
+    animation: slideInLeft 0.3s ease-out forwards;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(10px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-10px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.code-block {
+    position: relative;
+    background: #1e1e1e;
+    border-radius: 6px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    overflow-x: auto;
+}
+
+.code-block pre {
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+.code-copy-btn {
+    position: absolute;
+    right: 0.5rem;
+    top: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+    color: white;
+    cursor: pointer;
+    font-size: 0.75rem;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.code-block:hover .code-copy-btn {
+    opacity: 1;
+}
+
+.code-copy-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.prose {
+    max-width: 100%;
+}
+
+.prose code:not(.code-block code) {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-size: 0.9em;
+    font-family: 'Courier New', monospace;
+}
+
+.prose strong {
+    font-weight: 600;
+    color: #fff;
+}
+
+@media (max-width: 640px) {
+    #message-canvas {
+        padding: 10px;
+        height: calc(100vh - 160px) !important;
+    }
+    
+    .message-bot, .message-user {
+        max-width: 95%;
+    }
+    
+    #usertext {
+        padding-right: 36px;
+        font-size: 14px;
+    }
+    
+    header {
+        padding: 8px 12px;
+    }
+    
+    .bg-gray-700, .bg-gray-800 {
+        border-radius: 12px;
+    }
+}
+
+@media (max-width: 400px) {
+    #message-canvas {
+        height: calc(100vh - 140px) !important;
+    }
+    
+    #usertext {
+        padding: 8px 32px 8px 12px;
+    }
+    
+    #send-button {
+        padding: 8px 12px;
+    }
+}

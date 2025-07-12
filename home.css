@@ -1,12 +1,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
+:root {
+    --header-height: 3.5rem;
+    --input-height: 7.5rem;
+    --safe-area-top: env(safe-area-inset-top, 0px);
+    --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+}
+
 body {
     font-family: 'Inter', sans-serif;
     overflow-x: hidden;
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+.safe-area-top {
+    padding-top: var(--safe-area-top);
+}
+
+.safe-area-bottom {
+    padding-bottom: var(--safe-area-bottom);
 }
 
 .custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
+    width: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
@@ -25,10 +42,12 @@ body {
 
 .message-user {
     animation: slideInRight 0.3s ease-out forwards;
+    max-width: 90%;
 }
 
 .message-bot {
     animation: slideInLeft 0.3s ease-out forwards;
+    max-width: 90%;
 }
 
 @keyframes slideInRight {
@@ -109,40 +128,77 @@ body {
     color: #fff;
 }
 
+/* Mobile-specific styles */
 @media (max-width: 640px) {
     #message-canvas {
-        padding: 10px;
-        height: calc(100vh - 160px) !important;
+        padding: 0.75rem;
+        padding-bottom: var(--input-height);
+        height: calc(100vh - var(--header-height) - var(--safe-area-top) - var(--safe-area-bottom)) !important;
     }
     
     .message-bot, .message-user {
-        max-width: 95%;
+        max-width: 85%;
     }
     
     #usertext {
-        padding-right: 36px;
-        font-size: 14px;
+        padding-right: 2.5rem;
+        font-size: 1rem;
     }
     
     header {
-        padding: 8px 12px;
+        padding: 0.5rem 1rem;
     }
     
     .bg-gray-700, .bg-gray-800 {
-        border-radius: 12px;
+        border-radius: 0.75rem;
+    }
+    
+    /* Larger tap targets for mobile */
+    button, [role="button"] {
+        min-width: 44px;
+        min-height: 44px;
+    }
+    
+    /* Input area adjustments */
+    .h-input {
+        height: auto;
+        padding-bottom: var(--safe-area-bottom);
     }
 }
 
 @media (max-width: 400px) {
     #message-canvas {
-        height: calc(100vh - 140px) !important;
+        padding: 0.5rem;
     }
     
     #usertext {
-        padding: 8px 32px 8px 12px;
+        padding: 0.75rem 2.25rem 0.75rem 0.75rem;
+        font-size: 0.9rem;
     }
     
     #send-button {
-        padding: 8px 12px;
+        padding: 0.5rem;
+    }
+    
+    .message-bot, .message-user {
+        max-width: 95%;
+    }
+}
+
+/* Prevent zooming on input focus */
+@media (max-width: 480px) {
+    input, select, textarea {
+        font-size: 16px !important;
+    }
+}
+
+/* Dynamic viewport units for mobile browsers */
+@supports (height: 100dvh) {
+    body {
+        min-height: 100dvh;
+    }
+    
+    #message-canvas {
+        height: calc(100dvh - var(--header-height) - var(--input-height) - var(--safe-area-top) - var(--safe-area-bottom)) !important;
     }
 }

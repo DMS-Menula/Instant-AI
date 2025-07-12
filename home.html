@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>InstantAI | Fast AI Chat</title>
     <link rel="icon" href="https://cdn.glitch.global/508b41e4-6f72-402f-ac08-fbcec28cd90b/newlogo?v=1733566891391"/>
     <!-- Bootstrap CSS -->
@@ -26,11 +26,12 @@
     </script>
     <!-- Animate.css -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
 </head>
 <body class="bg-gray-900 text-gray-100 flex flex-col">
     <!-- Header -->
-    <header class="bg-gray-800 py-2 px-4 shadow-lg sticky top-0 z-10 h-header">
+    <header class="bg-gray-800 py-2 px-4 shadow-lg sticky top-0 z-10 h-header safe-area-top">
         <div class="flex justify-between items-center h-full">
             <a href="index.html" class="flex items-center space-x-2">
                 <img src="https://cdn.glitch.global/508b41e4-6f72-402f-ac08-fbcec28cd90b/newlogo?v=1733566891391" 
@@ -50,11 +51,11 @@
                     <i class="fas fa-chevron-down absolute right-1.5 top-1.5 text-gray-400 pointer-events-none text-xs"></i>
                 </div>
                 
-                <button id="clear-chat" class="p-1 text-gray-400 hover:text-white transition-colors duration-300">
+                <button id="clear-chat" class="p-2 text-gray-400 hover:text-white transition-colors duration-300" aria-label="Clear chat">
                     <i class="fas fa-trash-alt text-base"></i>
                 </button>
                 
-                <button id="theme-toggle" class="p-1 text-gray-400 hover:text-white transition-colors duration-300">
+                <button id="theme-toggle" class="p-2 text-gray-400 hover:text-white transition-colors duration-300" aria-label="Toggle theme">
                     <i class="fas fa-moon text-base"></i>
                 </button>
             </div>
@@ -63,7 +64,7 @@
 
     <!-- Main Chat Area -->
     <main class="flex-1 flex flex-col overflow-hidden">
-        <div id="message-canvas" class="flex-1 bg-gray-800 p-3 overflow-y-auto custom-scrollbar">
+        <div id="message-canvas" class="flex-1 bg-gray-800 p-3 overflow-y-auto custom-scrollbar pb-[7.5rem]">
             <!-- Welcome message -->
             <div class="message-bot animate__animated animate__fadeInUp animate__faster mb-3">
                 <div class="flex items-start space-x-2">
@@ -81,25 +82,27 @@
         </div>
 
         <!-- Input Area -->
-        <div class="bg-gray-800 p-3 shadow-lg h-input fixed-bottom">
+        <div class="bg-gray-800 p-3 shadow-lg h-input fixed bottom-0 left-0 right-0 safe-area-bottom">
             <div class="flex items-center space-x-2" style="height:50px;">
                 <div class="flex-grow relative h-full">
                     <input id="usertext" 
                            type="text" 
                            placeholder="Type your message..." 
                            class="w-full h-full bg-gray-700 text-white px-3 py-2 text-sm sm:text-base rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 pr-10"
-                           autocomplete="off">
+                           autocomplete="off"
+                           enterkeyhint="send">
                     <div class="absolute right-2 top-1/2 transform -translate-y-1/2 flex space-x-1">
-                        <button id="voice-input" class="text-gray-400 hover:text-blue-400 transition-colors duration-300 text-sm">
+                        <button id="voice-input" class="text-gray-400 hover:text-blue-400 transition-colors duration-300 text-sm p-1" aria-label="Voice input">
                             <i class="fas fa-microphone"></i>
                         </button>
-                        <button id="attach-file" class="text-gray-400 hover:text-blue-400 transition-colors duration-300 text-sm">
+                        <button id="attach-file" class="text-gray-400 hover:text-blue-400 transition-colors duration-300 text-sm p-1" aria-label="Attach file">
                             <i class="fas fa-paperclip"></i>
                         </button>
                     </div>
                 </div>
                 <button id="send-button" 
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 h-full text-sm sm:text-base rounded-lg font-medium transition-all duration-300 flex items-center justify-center aspect-square sm:aspect-auto sm:w-20">
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 h-full text-sm sm:text-base rounded-lg font-medium transition-all duration-300 flex items-center justify-center aspect-square sm:aspect-auto sm:w-20"
+                        aria-label="Send message">
                     <span class="hidden sm:inline">Send</span>
                     <i class="fas fa-paper-plane text-sm sm:ml-1"></i>
                 </button>
